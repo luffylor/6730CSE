@@ -48,6 +48,6 @@ public class Event implements Comparable<Event> {
             return timeCmp;
         }
         else
-            return Integer.valueOf(m_eventId).compareTo(Integer.valueOf(ev.getId()));
+            return Integer.compare(m_eventId, ev.getId());
     }
 }
