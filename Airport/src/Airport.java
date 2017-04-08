@@ -11,7 +11,7 @@ public class Airport implements EventHandler {
     private int m_inTheAir;
     private int m_onTheGround;
 
-    private boolean m_freeToLand;
+    private boolean m_land1, m_land2, m_takeoff1;
 
 
     private double m_flightTime;
@@ -37,7 +37,9 @@ public class Airport implements EventHandler {
         m_airportName = name;
         m_inTheAir =  0;
         m_onTheGround = 0;
-        m_freeToLand = true;
+        m_land1 = true;
+        m_land2 = true;
+        m_takeoff1 = true;
         m_runwayTimeToLand = runwayTimeToLand;
         m_requiredTimeOnGround = requiredTimeOnGround;
         m_runwayTimeToTakeOff = runwayTimeToTakeOff;
@@ -112,29 +114,45 @@ public class Airport implements EventHandler {
                 //record arriving time
                 airEvent.setArrivingTime(Simulator.getCurrentTime());
                 System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " arrived at " + this.getAirportName());
-                if(m_freeToLand) {
-                    m_freeToLand = false;
-                    AirportEvent firstArrivingEvent = arrivingQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing " + this.getAirportName());
+                if(m_land1) {
+                    m_land1 = false;
+                    AirportEvent firstArrivingEvent1 = arrivingQueue.poll();
+                    System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the first landing runway of " + this.getAirportName());
                     //record circling time for a plane
-                    firstArrivingEvent.setArrivedTime(Simulator.getCurrentTime());
-                    m_circlingTime += firstArrivingEvent.getWaitTime();
+                    firstArrivingEvent1.setArrivedTime(Simulator.getCurrentTime());
+                    m_circlingTime += firstArrivingEvent1.getWaitTime();
 
                     //record arriving passengers
-                    m_arrivingPassengers += firstArrivingEvent.getAirplane().getNumberPassengers();
+                    m_arrivingPassengers += firstArrivingEvent1.getAirplane().getNumberPassengers();
 
-                    AirportEvent landedEvent = new AirportEvent(firstArrivingEvent.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED);
-                    Simulator.schedule(landedEvent);
+                    AirportEvent landedEvent1 = new AirportEvent(firstArrivingEvent1.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 0);
+                    Simulator.schedule(landedEvent1);
                 }
+                else if(m_land2){
+                    m_land2 = false;
+                    AirportEvent firstArrivingEvent2 = arrivingQueue.poll();
+                    System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the second landing runway of " + this.getAirportName());
+                    //record circling time for a plane
+                    firstArrivingEvent2.setArrivedTime(Simulator.getCurrentTime());
+                    m_circlingTime += firstArrivingEvent2.getWaitTime();
+
+                    //record arriving passengers
+                    m_arrivingPassengers += firstArrivingEvent2.getAirplane().getNumberPassengers();
+
+                    AirportEvent landedEvent2 = new AirportEvent(firstArrivingEvent2.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 1);
+                    Simulator.schedule(landedEvent2);
+
+                }
+
                 break;
 
             case AirportEvent.PLANE_TAKEOFF:
                 departureQueue.add(airEvent);
-                if(m_freeToLand) {
-                    m_freeToLand = false;
+                if(m_takeoff1) {
+                    m_takeoff1 = false;
                     AirportEvent firstDepartureEvent = departureQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from " + this.getAirportName());
-                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS);
+                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from the first takeoff runway of" + this.getAirportName());
+                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS,2);
                     Simulator.schedule(takeoffEvent);
                 }
                 break;
@@ -162,26 +180,15 @@ public class Airport implements EventHandler {
                 double distance = calDistance(airport1, airport2);
                 double speed = airEvent.getAirplane().getSpeed();
                 m_flightTime = distance / speed;
-                AirportEvent departEvent = new AirportEvent(airEvent.getAirplane(), m_flightTime, destination, AirportEvent.PLANE_ARRIVES);
+                AirportEvent departEvent = new AirportEvent(airEvent.getAirplane(), m_flightTime, destination, AirportEvent.PLANE_ARRIVES,3);
                 Simulator.schedule(departEvent);
                 if(departureQueue.size() != 0){
                     AirportEvent firstDepartureEvent = departureQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from " + this.getAirportName());
-                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS);
+                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from the first takeoff runway of " + this.getAirportName());
+                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS,2);
                     Simulator.schedule(takeoffEvent);
-                }else if(arrivingQueue.size() != 0){
-                    AirportEvent firstArrivingEvent = arrivingQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstArrivingEvent.getAirplane().getName() + " start landing " + this.getAirportName());
-                    //record arriving passengers
-                    m_arrivingPassengers += firstArrivingEvent.getAirplane().getNumberPassengers();
-                    //record circling time for a plane
-                    firstArrivingEvent.setArrivedTime(Simulator.getCurrentTime());
-                    m_circlingTime += firstArrivingEvent.getWaitTime();
-
-                    AirportEvent landingEvent = new AirportEvent(firstArrivingEvent.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED);
-                    Simulator.schedule(landingEvent);
                 }else{
-                    m_freeToLand = true;
+                    m_takeoff1 = true;
                 }
                 break;
 
@@ -190,30 +197,44 @@ public class Airport implements EventHandler {
                 m_inTheAir--;
                 m_onTheGround++;
                 System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " lands at " + this.getAirportName());
-                AirportEvent departureEvent = new AirportEvent(airEvent.getAirplane(), m_requiredTimeOnGround, this, AirportEvent.PLANE_TAKEOFF);
+                AirportEvent departureEvent = new AirportEvent(airEvent.getAirplane(), m_requiredTimeOnGround, this, AirportEvent.PLANE_TAKEOFF,2);
                 Simulator.schedule(departureEvent);
+                int runway = airEvent.getRunway();
+                if (runway == 0) m_land1  = true;
+                if (runway == 1) m_land2 = true;
                 if(arrivingQueue.size() != 0)
                 {
-                    AirportEvent firstArrivingEvent = arrivingQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstArrivingEvent.getAirplane().getName() + " start landing " + this.getAirportName());
-                    //record arriving passengers
-                    m_arrivingPassengers += firstArrivingEvent.getAirplane().getNumberPassengers();
-                    //record circling time for a plane
-                    firstArrivingEvent.setArrivedTime(Simulator.getCurrentTime());
-                    m_circlingTime += firstArrivingEvent.getWaitTime();
+                    if(m_land1) {
+                        m_land1 = false;
+                        AirportEvent firstArrivingEvent1 = arrivingQueue.poll();
+                        System.out.println(Simulator.getCurrentTime() + ": " + firstArrivingEvent1.getAirplane().getName() + " start landing at the first landing runway of " + this.getAirportName());
+                        //record circling time for a plane
+                        firstArrivingEvent1.setArrivedTime(Simulator.getCurrentTime());
+                        m_circlingTime += firstArrivingEvent1.getWaitTime();
 
-                    AirportEvent landingEvent = new AirportEvent(firstArrivingEvent.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED);
-                    Simulator.schedule(landingEvent);
-                }else if(departureQueue.size() != 0){
-                    AirportEvent firstDepartureEvent = departureQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from " + this.getAirportName());
-                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS);
-                    Simulator.schedule(takeoffEvent);
+                        //record arriving passengers
+                        m_arrivingPassengers += firstArrivingEvent1.getAirplane().getNumberPassengers();
+
+                        AirportEvent landedEvent1 = new AirportEvent(firstArrivingEvent1.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED,0);
+                        Simulator.schedule(landedEvent1);
+                    }
+                    else if(m_land2){
+                        m_land2 = false;
+                        AirportEvent firstArrivingEvent2 = arrivingQueue.poll();
+                        System.out.println(Simulator.getCurrentTime() + ": " + firstArrivingEvent2.getAirplane().getName() + " start landing at the second landing runway of " + this.getAirportName());
+                        //record circling time for a plane
+                        firstArrivingEvent2.setArrivedTime(Simulator.getCurrentTime());
+                        m_circlingTime += firstArrivingEvent2.getWaitTime();
+
+                        //record arriving passengers
+                        m_arrivingPassengers += firstArrivingEvent2.getAirplane().getNumberPassengers();
+
+                        AirportEvent landedEvent2 = new AirportEvent(firstArrivingEvent2.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED,1);
+                        Simulator.schedule(landedEvent2);
+
+                    }
                 }
-                else
-                {
-                    m_freeToLand = true;
-                }
+
                 break;
         }
     }

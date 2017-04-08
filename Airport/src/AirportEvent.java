@@ -11,14 +11,20 @@ public class AirportEvent extends Event {
     //private Airport m_nextHandler;
     private double m_arrvingTime;
     private double m_arrivedTime;
+    private int m_runway;
 
     //add airplane parameter
-    AirportEvent(Airplane plane, double delay, EventHandler curHandler, int eventType) {
+    AirportEvent(Airplane plane, double delay, EventHandler curHandler, int eventType, int runway) {
         super(delay, curHandler, eventType);
         m_plane = plane;
         //m_nextHandler = nextHandler;
         m_arrvingTime = 0;
         m_arrivedTime = 0;
+        m_runway = runway;
+        // first land runway is 0
+        // second land runway is 1
+        // first takeoff runway is 2
+        // No runway parameter requires for the event is 3
     }
 
     //add getAirplane
@@ -26,6 +32,7 @@ public class AirportEvent extends Event {
     //public Airport getNextHandler() {return m_nextHandler;}
 
     public void setArrivingTime(double time) {m_arrvingTime = time; }
+    public int getRunway() {return m_runway; }
     public void setArrivedTime(double time) {m_arrivedTime = time; }
     public double getWaitTime() {return m_arrivedTime - m_arrvingTime; }
 }

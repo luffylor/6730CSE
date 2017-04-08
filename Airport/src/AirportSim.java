@@ -34,49 +34,33 @@ public class AirportSim {
 
     public static void main(String[] args) {
         Random rand = new Random();
-        for (int i = 0; i < 400; i++) {
+        /*for (int i = 0; i < 10; i++) {
             int  n1 = rand.nextInt(airplanes.size());
             int  n2 = rand.nextInt(airports.size());
             Airplane tempAirplane = airplanes.get(n1);
-            AirportEvent tempEvent = new AirportEvent(tempAirplane, 5, airports.get(n2), AirportEvent.PLANE_ARRIVES);
+            AirportEvent tempEvent = new AirportEvent(tempAirplane, 5, airports.get(n2), AirportEvent.PLANE_ARRIVES,3);
             airplanes.add(tempAirplane);
             Simulator.schedule(tempEvent);
-        }
+        }*/
 
-
-        //add airport events
-        /*AirportEvent landingEvent = new AirportEvent(plane1, 5, lax, atl, AirportEvent.PLANE_ARRIVES);
+        AirportEvent landingEvent = new AirportEvent(plane1, 5, lax, AirportEvent.PLANE_ARRIVES, 3);
         Simulator.schedule(landingEvent);
 
-        AirportEvent landingEvent2 = new AirportEvent(plane2, 5, lax, nyc , AirportEvent.PLANE_ARRIVES);
+        AirportEvent landingEvent2 = new AirportEvent(plane2, 5, lax, AirportEvent.PLANE_ARRIVES, 3);
         Simulator.schedule(landingEvent2);
 
-        AirportEvent landingEvent3 = new AirportEvent(plane3, 5, atl, iah , AirportEvent.PLANE_ARRIVES);
+        AirportEvent landingEvent3 = new AirportEvent(plane3, 5, lax, AirportEvent.PLANE_ARRIVES, 3);
         Simulator.schedule(landingEvent3);
 
-        AirportEvent landingEvent4 = new AirportEvent(plane4, 5, chi, nyc , AirportEvent.PLANE_ARRIVES);
+        AirportEvent landingEvent4 = new AirportEvent(plane4, 5, lax, AirportEvent.PLANE_ARRIVES, 3);
         Simulator.schedule(landingEvent4);
 
-        AirportEvent landingEvent5 = new AirportEvent(plane5, 5, chi, iah , AirportEvent.PLANE_ARRIVES);
+        AirportEvent landingEvent5 = new AirportEvent(plane5, 5, lax, AirportEvent.PLANE_ARRIVES, 3);
         Simulator.schedule(landingEvent5);
 
-        AirportEvent landingEvent6 = new AirportEvent(plane6, 9, iah, atl, AirportEvent.PLANE_ARRIVES);
-        Simulator.schedule(landingEvent6);
-
-        AirportEvent landingEvent7 = new AirportEvent(plane7, 8, iah, nyc, AirportEvent.PLANE_ARRIVES);
-        Simulator.schedule(landingEvent7);
-
-        AirportEvent landingEvent8 = new AirportEvent(plane8, 10, atl, chi, AirportEvent.PLANE_ARRIVES);
-        Simulator.schedule(landingEvent8);
-
-        AirportEvent landingEvent9 = new AirportEvent(plane9, 10, atl, atl, AirportEvent.PLANE_ARRIVES);
-        Simulator.schedule(landingEvent9);
-
-        AirportEvent landingEvent10 = new AirportEvent(plane10, 5, nyc, atl, AirportEvent.PLANE_ARRIVES);
-        Simulator.schedule(landingEvent10);*/
 
 
-        Simulator.stopAt(1000);
+        Simulator.stopAt(100);
         Simulator.run();
 
         System.out.println("Airport LAX arriving passengers: " + lax.getArrivingPassenger());
