@@ -16,16 +16,16 @@ public class AirportSim {
     public static Airport chi = new Airport("CHI", 0.5, 2, 0.3);
 
     //add airplane
-    public static Airplane plane1 = new Airplane("plane1", 506, 640);//A380
-    public static Airplane plane2 = new Airplane("plane2", 147, 583);//Boeing 737
-    public static Airplane plane3 = new Airplane("plane3", 314, 562);//Boeing 777
-    public static Airplane plane4 = new Airplane("plane4", 277, 541);//A330
-    public static Airplane plane5 = new Airplane("plane5", 290, 567);//Boeing 787
-    public static Airplane plane6 = new Airplane("plane6", 506, 640);//A380
-    public static Airplane plane7 = new Airplane("plane7", 147, 583);//Boeing 737
-    public static Airplane plane8 = new Airplane("plane8", 314, 562);//Boeing 777
-    public static Airplane plane9 = new Airplane("plane9", 277, 541);//A330
-    public static Airplane plane10 = new Airplane("plane10", 290, 567);//Boeing 787
+    public static Airplane plane1 = new Airplane("plane1", 506, 640, 1000, 2, 1);//A380
+    public static Airplane plane2 = new Airplane("plane2", 147, 583, 1000,2,1);//Boeing 737
+    public static Airplane plane3 = new Airplane("plane3", 314, 562,1000, 2, 1);//Boeing 777
+    public static Airplane plane4 = new Airplane("plane4", 277, 541,1000, 2, 1);//A330
+    public static Airplane plane5 = new Airplane("plane5", 290, 567,1000, 2, 1);//Boeing 787
+    public static Airplane plane6 = new Airplane("plane6", 506, 640,1000, 2, 1);//A380
+    public static Airplane plane7 = new Airplane("plane7", 147, 583,1000, 2, 1);//Boeing 737
+    public static Airplane plane8 = new Airplane("plane8", 314, 562,1000, 2, 1);//Boeing 777
+    public static Airplane plane9 = new Airplane("plane9", 277, 541,1000, 2, 1);//A330
+    public static Airplane plane10 = new Airplane("plane10", 290, 567,1000, 2, 1);//Boeing 787
 
 
     public static ArrayList<Airplane> airplanes = new ArrayList<Airplane>(Arrays.asList(plane1, plane2, plane3, plane4, plane5, plane6, plane7, plane8, plane9, plane10));
@@ -60,8 +60,27 @@ public class AirportSim {
 
 
 
-        Simulator.stopAt(100);
+        Simulator.stopAt(1000);
         Simulator.run();
+
+        //weather-----------------------------------------------------
+        //***************************************today*********************************************
+        System.out.println("Airport LAX traveling gas consumed: " + lax.gasConsumedTraveling);
+        System.out.println("Airport LAX circuling gas consumed: " + lax.gasConsumedCirculing);
+
+        System.out.println("Airport ATL traveling gas consumed: " + atl.gasConsumedTraveling);
+        System.out.println("Airport ATL circuling gas consumed: " + atl.gasConsumedCirculing);
+
+        System.out.println("Airport NYC traveling gas consumed: " + nyc.gasConsumedTraveling);
+        System.out.println("Airport NYC circuling gas consumed: " + nyc.gasConsumedCirculing);
+
+        System.out.println("Airport IAN traveling gas consumed: " + iah.gasConsumedTraveling);
+        System.out.println("Airport IAN circuling gas consumed: " + iah.gasConsumedCirculing);
+
+        System.out.println("Airport CHI traveling gas consumed: " + chi.gasConsumedTraveling);
+        System.out.println("Airport CHI circuling gas consumed: " + chi.gasConsumedCirculing);
+        //weather-----------------------------------------------------
+        //***************************************today*********************************************
 
         System.out.println("Airport LAX arriving passengers: " + lax.getArrivingPassenger());
         System.out.println("Airport LAX departing passengers: " + lax.getDepartingPassenger());

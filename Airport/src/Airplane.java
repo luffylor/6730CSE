@@ -11,11 +11,22 @@ public class Airplane {
     private int m_speed;
     private int m_maxPassengers;
 
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
+    private double gasVolume;
+    private double gasConsumed = 0;
+    public double gasSpeedTraveling;
+    public double gasSpeedCirculing;
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
+
     //add speed, maximum passengers
-    public Airplane(String name, int max_passenger, int speed) {
+    public Airplane(String name, int max_passenger, int speed, double volume, double gasSpeed1, double gasSpeed2) {
         m_name = name;
         m_maxPassengers = max_passenger;
         m_speed = speed;
+        gasSpeedTraveling = gasSpeed1;
+        gasSpeedCirculing = gasSpeed2;
         Random rand = new Random();
         m_numberPassengers = rand.nextInt(m_maxPassengers) + 1;
     }
@@ -32,4 +43,12 @@ public class Airplane {
         Random rand = new Random();
         m_numberPassengers = rand.nextInt(m_maxPassengers) + 1;
     }
+
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
+    public double calGas(double duration, double speed){
+        return gasConsumed = duration * speed;
+    }
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
 }

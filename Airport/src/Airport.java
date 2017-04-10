@@ -12,13 +12,26 @@ public class Airport implements EventHandler {
     private int m_onTheGround;
 
     private boolean m_land1, m_land2, m_takeoff1;
-
+    //weather-----------------------------------------------------
+    //***************************************today*********************************************
+    private boolean weather = true;
+    private boolean[] weatherArray = new boolean[]{false, false, false, false,false, true,false, true, false, false};
+    private double duration = 10.0;
+    private double oldWeatherTime = 0.0;
+    //weather-----------------------------------------------------
+    //***************************************today*********************************************
 
     private double m_flightTime;
     private double m_runwayTimeToLand;
     private double m_requiredTimeOnGround;
     private double m_runwayTimeToTakeOff;
 
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
+    public double gasConsumedTraveling = 0;
+    public double gasConsumedCirculing = 0;
+    //gas-----------------------------------------------------
+    //***************************************today*********************************************
 
     private String m_airportName;
 
@@ -106,56 +119,91 @@ public class Airport implements EventHandler {
 
     public void handle(Event event) {
         AirportEvent airEvent = (AirportEvent)event;
-
+// If condition to check weather true of false;
         switch(airEvent.getType()) {
             case AirportEvent.PLANE_ARRIVES:
+                //weather if condition--------------------------------
                 m_inTheAir++;
-                arrivingQueue.add(airEvent);
+
                 //record arriving time
                 airEvent.setArrivingTime(Simulator.getCurrentTime());
                 System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " arrived at " + this.getAirportName());
-                if(m_land1) {
-                    m_land1 = false;
-                    AirportEvent firstArrivingEvent1 = arrivingQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the first landing runway of " + this.getAirportName());
-                    //record circling time for a plane
-                    firstArrivingEvent1.setArrivedTime(Simulator.getCurrentTime());
-                    m_circlingTime += firstArrivingEvent1.getWaitTime();
-
-                    //record arriving passengers
-                    m_arrivingPassengers += firstArrivingEvent1.getAirplane().getNumberPassengers();
-
-                    AirportEvent landedEvent1 = new AirportEvent(firstArrivingEvent1.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 0);
-                    Simulator.schedule(landedEvent1);
+                //***************************************today*********************************************
+                //weather-----------------------------------------------------
+                if ((Simulator.getCurrentTime() - oldWeatherTime) >= duration) {
+                    int rnd = new Random().nextInt(weatherArray.length);
+                    weather = weatherArray[rnd];
+                    duration = 10 - (Simulator.getCurrentTime() - (oldWeatherTime + duration)) % 10;
+                    oldWeatherTime = Simulator.getCurrentTime();
                 }
-                else if(m_land2){
-                    m_land2 = false;
-                    AirportEvent firstArrivingEvent2 = arrivingQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the second landing runway of " + this.getAirportName());
-                    //record circling time for a plane
-                    firstArrivingEvent2.setArrivedTime(Simulator.getCurrentTime());
-                    m_circlingTime += firstArrivingEvent2.getWaitTime();
+                if (!weather) {
+                    AirportEvent temp = new AirportEvent(airEvent.getAirplane(), 1, this, AirportEvent.PLANE_ARRIVES,3);
+                    Simulator.schedule(temp);
 
-                    //record arriving passengers
-                    m_arrivingPassengers += firstArrivingEvent2.getAirplane().getNumberPassengers();
+                }else {
+                    arrivingQueue.add(airEvent);
+                    if(m_land1) {
+                        m_land1 = false;
+                        AirportEvent firstArrivingEvent1 = arrivingQueue.poll();
+                        System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the first landing runway of " + this.getAirportName());
+                        //record circling time for a plane
+                        firstArrivingEvent1.setArrivedTime(Simulator.getCurrentTime());
+                        m_circlingTime += firstArrivingEvent1.getWaitTime();
 
-                    AirportEvent landedEvent2 = new AirportEvent(firstArrivingEvent2.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 1);
-                    Simulator.schedule(landedEvent2);
 
+                        //record arriving passengers
+                        m_arrivingPassengers += firstArrivingEvent1.getAirplane().getNumberPassengers();
+
+                        AirportEvent landedEvent1 = new AirportEvent(firstArrivingEvent1.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 0);
+                        Simulator.schedule(landedEvent1);
+                    }
+
+                    else if(m_land2){
+                        m_land2 = false;
+                        AirportEvent firstArrivingEvent2 = arrivingQueue.poll();
+                        System.out.println(Simulator.getCurrentTime() + ": " + airEvent.getAirplane().getName() + " start landing at the second landing runway of " + this.getAirportName());
+                        //record circling time for a plane
+                        firstArrivingEvent2.setArrivedTime(Simulator.getCurrentTime());
+                        m_circlingTime += firstArrivingEvent2.getWaitTime();
+
+                        //record arriving passengers
+                        m_arrivingPassengers += firstArrivingEvent2.getAirplane().getNumberPassengers();
+
+                        AirportEvent landedEvent2 = new AirportEvent(firstArrivingEvent2.getAirplane(), m_runwayTimeToLand, this, AirportEvent.PLANE_LANDED, 1);
+                        Simulator.schedule(landedEvent2);
+
+                    }
                 }
-
+                //weather-----------------------------------------------------
+                //***************************************today*********************************************
                 break;
 
             case AirportEvent.PLANE_TAKEOFF:
-                departureQueue.add(airEvent);
-                if(m_takeoff1) {
-                    m_takeoff1 = false;
-                    AirportEvent firstDepartureEvent = departureQueue.poll();
-                    System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from the first takeoff runway of" + this.getAirportName());
-                    AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS,2);
-                    Simulator.schedule(takeoffEvent);
+                //***************************************today*********************************************
+                //weather-----------------------------------------------------
+                if ((Simulator.getCurrentTime() - oldWeatherTime) >= duration) {
+                    int rnd = new Random().nextInt(weatherArray.length);
+                    weather = weatherArray[rnd];
+                    duration = 10 - (Simulator.getCurrentTime() - (oldWeatherTime + duration)) % 10;
+                    oldWeatherTime = Simulator.getCurrentTime();
+                }
+                if (!weather) {
+                    AirportEvent temp = new AirportEvent(airEvent.getAirplane(), 1, this, AirportEvent.PLANE_DEPARTS,3);
+                    Simulator.schedule(temp);
+
+                }else {
+                    departureQueue.add(airEvent);
+                    if(m_takeoff1) {
+                        m_takeoff1 = false;
+                        AirportEvent firstDepartureEvent = departureQueue.poll();
+                        System.out.println(Simulator.getCurrentTime() + ": " + firstDepartureEvent.getAirplane().getName() + " takeoff from the first takeoff runway of" + this.getAirportName());
+                        AirportEvent takeoffEvent = new AirportEvent(firstDepartureEvent.getAirplane(), m_runwayTimeToTakeOff, this, AirportEvent.PLANE_DEPARTS,2);
+                        Simulator.schedule(takeoffEvent);
+                    }
                 }
                 break;
+            //weather-----------------------------------------------------
+            //***************************************today*********************************************
 
             //For each plane departure, select a remote airport and use some sort of random distribution to calculate the number of passengers on the flight.
             case AirportEvent.PLANE_DEPARTS:
@@ -180,7 +228,15 @@ public class Airport implements EventHandler {
                 double distance = calDistance(airport1, airport2);
                 double speed = airEvent.getAirplane().getSpeed();
                 m_flightTime = distance / speed;
-                AirportEvent departEvent = new AirportEvent(airEvent.getAirplane(), m_flightTime, destination, AirportEvent.PLANE_ARRIVES,3);
+                Airplane temp = airEvent.getAirplane();
+
+                //***************************************today*********************************************
+                // gas1-----------------------------------------------------
+                gasConsumedTraveling += temp.calGas(m_flightTime, temp.gasSpeedTraveling);
+                //----------------------------------------------------------
+                //***************************************today*********************************************
+
+                AirportEvent departEvent = new AirportEvent(temp, m_flightTime, destination, AirportEvent.PLANE_ARRIVES,3);
                 Simulator.schedule(departEvent);
                 if(departureQueue.size() != 0){
                     AirportEvent firstDepartureEvent = departureQueue.poll();
@@ -212,6 +268,16 @@ public class Airport implements EventHandler {
                         firstArrivingEvent1.setArrivedTime(Simulator.getCurrentTime());
                         m_circlingTime += firstArrivingEvent1.getWaitTime();
 
+                        //***************************************today*********************************************
+                        // gas2----------------------------------
+                        Airplane temp1 = airEvent.getAirplane();
+
+                        gasConsumedCirculing += temp1.calGas(firstArrivingEvent1.getWaitTime(), temp1.gasSpeedCirculing);
+                        System.out.println("airport" + this.getAirportName() + "circuling time1" + m_circlingTime);
+                        System.out.println("airport" + this.getAirportName() + "circuling gas consume" + gasConsumedCirculing);
+                        //---------------------------------------
+                        //***************************************today*********************************************
+
                         //record arriving passengers
                         m_arrivingPassengers += firstArrivingEvent1.getAirplane().getNumberPassengers();
 
@@ -225,6 +291,15 @@ public class Airport implements EventHandler {
                         //record circling time for a plane
                         firstArrivingEvent2.setArrivedTime(Simulator.getCurrentTime());
                         m_circlingTime += firstArrivingEvent2.getWaitTime();
+                        //***************************************today*********************************************
+                        // gas2----------------------------------
+                        Airplane temp2 = airEvent.getAirplane();
+
+                        gasConsumedCirculing += temp2.calGas(firstArrivingEvent2.getWaitTime(), temp2.gasSpeedCirculing);
+                        System.out.println("airport" + this.getAirportName() + "circuling time2" + m_circlingTime);
+                        System.out.println("airport" + this.getAirportName() + "circuling gas consume" + gasConsumedCirculing);
+                        //---------------------------------------
+                        //***************************************today*********************************************
 
                         //record arriving passengers
                         m_arrivingPassengers += firstArrivingEvent2.getAirplane().getNumberPassengers();
@@ -234,7 +309,7 @@ public class Airport implements EventHandler {
 
                     }
                 }
-
+// Random again the new weather;
                 break;
         }
     }
