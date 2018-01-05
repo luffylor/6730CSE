@@ -1,4 +1,9 @@
-//YOUR NAME HERE
+// Xiao Han
+// In this Java program, I simulate the opreation of airports that allow airplane to fly around five airport
+// And calculate the delay and travel cost as well as total delivered passenger
+// I create a class named Aiport_array to store the five airports.
+// I modify\ied the following classes, Airplane, Airport, AirportEvent, AirportSim.
+// The main function is in the AirportSim class.
 import java.util.PriorityQueue;
 import java.util.Random;
 
